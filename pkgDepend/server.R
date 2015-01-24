@@ -1,25 +1,22 @@
 # server.R
-
-library(quantmod)
-source("helpers.R")
+pack <- available.packages()
 
 shinyServer(function(input, output) {
-
-    dataInput <- reactive({
-        getSymbols(input$symb, src = "yahoo", 
-                   from = input$dates[1],
-                   to = input$dates[2],
-                   auto.assign = FALSE)
+    
+    output$pckName <- renderText({
+        input$pck
     })
     
-    finalInput <- reactive({
-        if (!input$adjust) return(dataInput())
-        adjust(dataInput())
+    output$depends <- renderText({
+        paste('List of dependencies are:', pack[input$pck, 'Depends'])
     })
     
-    output$plot <- renderPlot({
-        chartSeries(finalInput(), theme = chartTheme("white"), 
-                    type = "line", log.scale = input$log, TA = NULL)
+    output$imports <- renderText({
+        paste('List of imports are:', pack[input$pck, 'Imports'])
     })
-  
+    
+    output$suggests <- renderText({
+        paste('List of suggests are:', pack[input$pck, 'Suggests'])
+    })
+    
 })
